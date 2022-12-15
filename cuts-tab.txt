@@ -1,0 +1,208 @@
+presentation mode : F7
+creation of new sheet : CRTL + M
+Moving among pages : pageup + CTRL - pagedown + CTRL
+swapping rows & columns : CTRL + W
+finding DIM or MEASURE : CRTL+ F ( ESC for coming out of it )
+DESC of SHEET : CTRL + E
+showME : CTRL+1
+shrinking & exapnding the column:CTRL+ B -CTRL +SHIFT + B
+ALT + SHIFT+F
+ALT + SHIFT+C-column
+ALT + SHIFT+X-rows
+******MARK CARDS**********
+ALT + SHIFT+I -SIZE
+ALT + SHIFT+L-detail
+ALT + SHIFT+o-colour
+ALT + SHIFT+T -TEXT
+ALT + W + O - tooltip
+
+**********************************************************
+Sheet FORMATTING Contains ALL the change that has to be made
+Headers has its OWN format ( VERTICALLY OR HORIZONTALLY )
+
+??? HOW to deal with ### problems ????
+
+- table formatting [ row have seperate headers & columns have seperate headers ]
+- rolling 12 months [https://www.youtube.com/watch?v=MnIXXjO9mPA]
+-
+
+
+********************************************************
+
+create calculated field : ALT + A + C
+ctrl+L : LABELS rotate ( IN custom does'nt work )
+
+ALT+SHIFT + Back : cleansheet
+
+****FLOATED Objects *****
+direction keys -floated object
+CTRL + ALT +DIRECTION
+
+resize table : CTRL+ DIRECTION 
+
+* show header ( unhide Axis )
+
+CTRL+ 1 or 2 : show charts & data source connection page
+
+*ALT + A+O+G = Grand Total
+*ALT + A+O+T = Row Total
+*ALT+A+O+A = Sub-Total
+-A+O+M : remove
+-A+O+U : avg,min,max,sum
+
+Cyclic fields : ALT + A+ E
+title, caption summary : ALT + TCS
+
+*direct filter of Dimension present currently : ALT + A + I
+*Remove COLUMN HEADER & ROW HEADER : ALT +A + B + D or F
+ 
+*****FORMAT ***************
+ALT  + O + FASBL
+ALT  + O + RnoTi
+ALT  + O +LFHP
+ALT  + O + Z : cell size setting
+ALT  + O + m : remove all formatting
+
+*************************************
+TABLE LAYOUT
+
+* ALT + A+B+ A = switch from bottom header to Top header
+
+******************************************
+
+** ALT + A+B+ LFHP : table specific ***
+
+************************************
+EDITING CALCULATED FIELDS
+*ALT + A+ U 
+
+*************sheet movement ***********************
+ctrl +shift + TAB
+CTRL + TAB 
+
+****************** Add measure Name in row to add header name to measure value ******************
+
+
+************* rename dimension name **************
+// *name* [ original name ]
+SHIFT + ENTER
+CTRL+ ENTER
+
+**Concantenate**
+[ name 1] +" - "+[name 2]
+
+***********************************************************
+T & T
+!  creation of TEXT tables : 1 ) always drag DIMENSION first
+                                                      2) double click on measure value
+ ! side bar gets hidden : windows tab has it 
+
+! importing datasource from a workbook :  go to "more" section of data connection point , open the workbook 
+  the data source will be viewable now.
+
+! mutliverse of tableau moving data from excel to tableau or even tableau to tabelau( data source here remain INTACT ) & vice versa : crtl+ c to crtl + v
+** note** the datasource here is TEMP !!!!  & gets removed once closed
+
+! Summary cards : all the details in detail section ( right click empty area + " summary" )
+** works for measure only ***
+! DESCRIBTION OF SHEETS : CRTL + e
+
+! TWBX - does'nt ask for EXTRACT save
+TWB - ask to save Extract
+
+! TWBX - package file extraction : extract every file from twbx by making or putting  it a .ZIP at the end of the extension
+                & then EXTRACT IT : all the data , localfile , links , logos & image will get dowloaded.
+
+! Label for a Single measure  TEXT Table  : double click on another measure , that automatcally adds the column name & then filter the column 
+which you DONT WANT.
+
+! REMOVE ABC :  method 1 : create calc field - as blank ( " ") , drag it to LABELS 
+                                method 2: 
+! Seperate colour for Each legend : Create a COPY of Measure value & drag into colour & right click - " Seperate legends " 
+OR
+ " combine legends" ( for single colour gradient for all MEASURE values )
+
+! Viewing UNDERLYING Data :  data is viewable both AT DRILL level & overall level ( summary & full data )
+
+! find GROUP members by Substring ( KEYWORDS ) : grouping the columns values with FIND feature 
+
+! Dual Axis : drop it to Y axis to get " Seperate axis "  & drop the pill to the right side of the axis - " one single pill"
+
+! calculated Hacks : drag the auto generated calcuations , into calculated field to get the " all formulas" & vice versa
+
+
+**** Discrete generates Labels 
+ Continous generates AXIS *****
+
+****URL action  using mobile website embbed in WEBPAGE ****
+
+
+***************common errors*********************
+0:00  - Intro 
+1:38  - #1 Problem connecting to data source  [ drag required table into view ]
+3:18  - #2 Field does not exist [ replace the ! column by " Refrences " them & replace ]
+5:01  - #3 Records do not refresh [ only at intiate stage data is same , EVERY TIME DATA IS NEW it needs to be REFRESHED ( everywhere ) .
+6:21  - #4 Map is empty [ edit location for map error ]
+***9:03  - #5 Type compatibility error [ string & integer values cannot be ADDED ], HENCE number should be added to number & integer to integer ]
+                   USE TYPE CONVERSION IN CALCULATED WINDOW TO CONVERT ONE format to OTHER.
+***11:06 - #6 Cannot mix aggregate and non-aggregate arguments [  ROW LEVEL gnauarity-Profit  & GROUP LEVEL granularity- SUM(SALES) ]
+                      YOU CAN EIETHER BE AT GROUP LEVEL OR ROW LEVEL AT ONCE !!! eg: SUM( PROFIT) + SUM(PROFIT) = used specific for RATIOS ***
+13:05 - #7 Missing END clause 
+13:26 - #8 Unterminated string 
+14:23 - #9 Argument must be string literal  [ String literal or constant string[ A.K.A means all string should be of same FORMAT ,Eg: small letters then all shouls\d be small & capital for capital ] is MANDATORY ]
+16:11 - #10 Incorrect Dates  [ regional & Tableau DEAFULT  Date settings can cause ISSUES , Format of Date in Data Source can also cause problems ) ** USE DATEPARSE IN CALUCLATED FIELD DIALOG BOX to solve this **********
+
+18:20 - #11 Type mismatch on Join or Relationship [ DATETYPE OF JOINS & RELATIONSHIP FILEDS should be SAME ]
+19:53 - #12 Missed join field(s) [ joins using MUltiple fields ]
+
+******************************************************************************
+
+*****************Dynamic Sheet Swapping********************************
+
+Method 1 : Filter Parameter & Container [ old skool method ]
+ 
+ * Create a parameter , show parameter [ based on parameter hard code values embbedded , VIRTUAL dataset is created ]
+* CREATE a CALCULATED FIELD & insert YOUR PARAMETER
+* Move that CALCULATED FIELD TO FILTER [ hard code that value based on CURRENT VIEW of Sheet ]
+* use VERTICAL Containers TO create the Hide & show Effect 
+* Hide LABELS 
+
+METHOD 2 : Show & HIDE method
+
+* Build 2 sheets & Overlap one over the another in dashboard
+* make the top sheet FLOATING & Format shading as WHITE
+* make the Title of FLOATING worksheet Opaque by Formatting 
+* Insert SHOW HIDE BUTTON & EDIT IT
+
+Method 3 : Navigation button usage 
+
+* go back & forth on sheet build on seprate dashboards
+* iNSERT Navigation Button
+
+**************************************************************
+TEXT TABELS
+
+* Single Measure With  Simple KPI
+-TRICK
+- Create calculated field with Symbol
+-Colour the symbol
+
+*Conditional Formatting
+- Text
+- Background colour
+
+*Embedded Bar Chart With KPI
+*Simple Sparklines
+*KPI & Sparklines 
+
+**NOTE**  [ Custom Text Table ] 
+
+CONS - Complex calculations,More to Manage , Sync Multiple sheets
+Pros- More intutive & Enagaging
+
+************************************************************************
+Dynamic PIVOT TABLES - https://www.youtube.com/watch?v=U3g9bbvaoMM
+
+
+
+

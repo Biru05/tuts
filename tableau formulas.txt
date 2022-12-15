@@ -1,0 +1,363 @@
+SELECT  id As MATCH,name AS venue
+FROM match
+INNER JOIN venue USING(venue_id)
+LIMIT 3;
+
+SELECT name,
+(SELECT COUNT(DISTINCT(role_id))
+FROM player_match
+WHERE player_id =id
+GROUP BY player_id ) AS positions
+FROM player 
+ORDER BY positions DESC
+LIMIT 3;
+
+*************************************************
+
+# LY unprofitable customers
+WINDOW_COUNT(
+IF [LY Profitable]=FALSE THEN ATTR([Customer ID]) END
+)
+
+# Latest Year#
+{ MAX(YEAR([Order Date])) }
+
+#Latest Year
+{YEAR([Order Date]) = {MAX(YEAR([Order Date]))}
+
+Prior Year
+#YEAR([Order Date]) = {MAX(YEAR([Order Date]))}-1
+
+#LY Sales
+IF [Latest Year] THEN [Sales] END
+
+#LY Sales TOTAL
+{ SUM(IF [Latest Year] THEN [Sales] END) }
+
+#PY Sales
+IF [Prior Year] THEN [Sales] END
+
+#PY Sales TOTAL
+{ SUM(IF [Prior Year] THEN [Sales] END) }
+
+#YOY  INCREASE
+SUM([LY Sales])>SUM([PY Sales])
+
+#YOY TOTAL SALES
+( SUM([LY Sales Total])-SUM([PY Sales Total]) )
+/
+SUM([PY Sales Total])
+
+#LY Quantity
+{ SUM(IF [Latest Year] THEN [Quantity] END) }
+
+#PY Quantity
+{ SUM(IF [Prior Year] THEN [Quantity] END) }
+
+#YoY Quantity
+( SUM([LY Quantity])-SUM([PY Quantity]) )
+/
+SUM([PY Quantity])
+
+#LY Profit Ratio Total
+{ SUM(IF [Latest Year] THEN [Profit] END) }
+/
+[LY Sales Total]
+
+#LY Profitable
+SUM(IF [Latest Year] THEN [Profit] END) > 0
+
+Profit Ratio
+SUM([Profit]) / SUM([Sales])
+
+#PY Profit Ratio Total
+{ SUM(IF [Prior Year] THEN [Profit] END) }
+/
+[PY Sales Total]
+
+#YoY Profit Ratio Total
+( SUM([LY Profit Ratio Total])-SUM([PY Profit Ratio Total]) )
+
+
+
+************************************************************
+DAY break down
+
+IF  DATEPART('hour', [Order Purchase Timestamp]) >=4 AND
+DATEPART('hour', [Order Purchase Timestamp]) <=6 THEN 'DAWN'
+ELSEIF DATEPART('hour', [Order Purchase Timestamp]) >=6 AND
+DATEPART('hour', [Order Purchase Timestamp])<=12 THEN 'Morning'
+ELSEIF DATEPART('hour', [Order Purchase Timestamp]) >=12 and
+DATEPART('hour', [Order Purchase Timestamp]) <=17 THEN 'AFTERNOON'
+ELSEIF DATEPART('hour', [Order Purchase Timestamp]) >=18 AND
+DATEPART('hour', [Order Purchase Timestamp])<=20 THEN 'EVENING'
+ELSEIF DATEPART('hour', [Order Purchase Timestamp]) >=20 AND
+DATEPART('hour', [Order Purchase Timestamp])<=23 THEN 'NIGHT'
+END
+
+***************************************************
+#SALES CY
+
+{ fixed : SUM( IF YEAR([Order Date]) = {MAX(YEAR([Order Date]))}
+THEN [sales]
+END )}
+
+#Sales PY
+
+{ fixed : SUM( IF YEAR([Order Date]) = {MAX(YEAR([Order Date]))}-1
+THEN [Sales]
+END )}
+
+
+# % CHANGE 
+
+(SUM([sales CY])-SUM([sales PY]))/SUM([sales PY])
++0.0%;-0.0% - FORMAT
+
+
+#LAST 12 MONTHS
+DATETRUNC('month',[Order Date])
+>= 
+DATEADD('MONTH' ,-11, { MAX(DATETRUNC('MONTH', [Order Date])) } )
+
+
+**** remember to DISABLE " INCLUDE ZERO " FROM AXIS ******
+***** IT HELPS IN RESIZING OF CHART *****
+
+
+# FISCAL YEAR
+{ FIXED  : sum(IF YEAR(DATEADD('month',3,[setdatetime])) = {MAX(year(dateadd('month',3,[setdatetime])))}
+then [Appointment Count]
+END
+)}
+
+
+#TIP [ ANDY'S - YTD current to prior YTD ]
+One thing to note, I needed this to be a dynamic report that pivots on the current month so I added a filter with a calculation as below
+
+if DATENAME('month',[Date])= DATENAME('month',TODAY()) then 'Y' else 'N' end
+
+and left it on Y. Boom dynamic month based YOY reporting!
+
+
+
+# Stacked Area Chart (100%) -split by line
+IF ATTR([Ship Mode])='Same Day' THEN SUM([Sales]) / TOTAL(SUM([Sales]))END
+
+*****
+context filters- data passes through the main filter
+******
+formst-custom->+0.00%;-0.00%
+
+************
+How to Calculate Week over Week Change of the Last Complete Week
+
+completed weeks sales [ reason: when data for week is not complete (5 days out of 7) ]
+
+IF WINDOW_MAX(MAX(DATEPART('weekday',[Order Date])))=7
+THEN RUNNING_SUM(SUM[SALES]))
+END
+ edit the table calculation to "CELL" wise 
+
+PREVIOUS WEEK SALES: LOOKUP(completed week sales,-1)
+
+WOW sales
+[completed week sales]-[Previous Week Sales]
+
+WOW%
+[WOW]/[Previous Week Sales]
+
+LATEST wow%
+IF ISNULL([wow%]) AND LAST()=0
+THEN LOOKUP([wow%],-1)
+ELSE [wow%]
+END
+
+*********************
+window_sum : defines " window" SIZE of calculation
+compute using : USED for " directional "purpose
+******************
+****
+USAGE OF ref line in order to get the avg target ,while comparing LY ( last year) vs PY(previous Year) sales
+***********
+projects-Fitbit usage data and commercial retail clothing data
+
+course- calculations
+
+types of calculations
+
+*basic calculations
+row level calculations
+aggregate calculations
+
+*adavance calculations
+
+lvl of detail (LOD) expressions
+table calculations
+
+
+*most common errors in calculations
+-DO NOT MIX up row-level & agg calculations
+-DO NOT apply calculations on incompatible data type
+-watch out on syntax errors
+*missing synatax elements
+*Yet another trivial but common error is missing a syntax element, an identifier or
+ operator, comma, or parenthesis, or using an incorrect type of brackets.
+
+ Most common logical errors
+
+be aware that calculation validity check is only performed on the syntax of your formula and not on logical or mathematical correctness.
+
+-Applying mathematical operations in the wrong order, incorrect use of brackets in AND and OR statements,
+ wrong application of conditions in IF and Case functions, summing instead of counting, averaging an average,
+
+**********************
+string & logcal types calculations
+String,date & time,numeric,boolean(T/F)
+structural data sources: one column = one data type
+
+string-letters ,numbers & characters including alphanumeric
+first name+" "+last name : concantenate
+SPLIT(name," ,",1)- RIGHT CLICK.>>TRANSFORM>> SPLIT
+left,right,mid
+
+
+logical functions:boolean (T/F)
+AND ,OR,NOT
+
+
+
+zn()-converts all nulls to o
+IIF()-
+CASE & IF are simliar to each other
+IFNULL(---,---)
+
+IF   CONDITION, THEN    ELSE   END
+NESTED IF:  IF   CONDITION, THEN    ELSEIF
+THEN   ELSE  END
+
+IIF (TEST,   ,   )
+
+CASE... WHEN ..THEN...
+WHEN... THEN...
+ELSE ... END
+
+ISNULL & ISDATE- Boolean (T/F)
+
+IFNULL(TEST,0) or IFNULL(TEST,"NO STEPS") - CONTROL OUTPUT
+
+**************************************************
+Custom bin- "below 20",20,30,40,"more than 50"
+
+IF [Age]< 20 THEN 'Below 20' ELSEIF [Age]>=50
+THEN '50 or more' ELSE STR(FLOOR ([Age]/10)*10) END
+
+*******************************
+Level of Detail Expressions
+we will explore the navigation between various levels of data granularity. 
+With LOD expressions we will learn how to perform calculations independent of the dimensions in the view.
+ Prepare to discover a whole new world of analytical possibilities that will help you get beyond the obvious insights!
+
+Data granularity is the level of detail in a model or decision making process.
+ It tells you how detailed your data is. Let's have a look at the following example. 
+One table represents "Sleep per day" and another one "Heart Rate per minute". 
+Can you guess which one has a higher data granularity? That's right, the right one!
+
+
+Granularity of the view
+Granularity and Aggregation go hand in hand. When we aggregate the data,
+ we take multiple values and present them as a single value, 
+so we decrease the level of detail.
+When we however add dimensions to the table, such as Region and Years, 
+we increase the data granularity and increase the number of data points in our view.
+
+Managing granularity in Tableau worksheet
+In Tableau, the granularity increases with the amount of dimensions exposed 
+in Rows and Columns or in the Marks, such as detail, color, shape and so on. 
+The more dimensions we use, the higher the granularity and data points we get,
+ but with more dimensions, it becomes more difficult to visualize our data in a clear and structured way.
+
+**Enter LOD expressions - Tableau's elegant and powerful way to easily compute aggregations
+ that are not at the level of detail of the visualization.
+
+ **There are 3 functions in this family: INCLUDE, EXCLUDE, and FIXED. ***
+
+Through these functions you control the level of detail at which a calculation is performed 
+and do not depend on dimensions used in the visualization
+
+FIXED LOD Expressions
+FIXED LOD expressions compute a value using the specified dimensions, 
+without reference to the dimensions in the view.
+
+syntax is as follows: first, we open a pair of curly brackets, then we specify the LOD expression,
+ FIXED, followed by dimensions, a colon, and an aggregation calculation.
+ Note that you may use 0, 1, 2 or more dimensions, separated by a comma and in any order. 
+The result of LOD expressions can either be a dimension or a measure.
+
+*****FIXED{ [dimension],sum[..]} IS NOT TRUE...WHY?********
+
+Level of Details expression have a specific syntax, consisting of several elements, 
+which entail both dimensions as aggregated measures. 
+They ensure that the detail of the data can be included in a calculation even if a specific dimension is not present in the canvas.
+
+ Practical applications of FIXED LOD expressions
+There are many practical applications of FIXED LOD expressions!
+ One of them is calculating measures between various time dimensions, 
+so for example swapping between daily and weekly sums of Sales.
+ Another frequent application is calculating totals and subtotals per categories and 
+percentages of total or contribution rates. 
+Yet another use case is computing the first or last data point per subject,
+ for example first order date per customer
+
+Cohort and survival analysis
+Let's have a closer look at two interesting analyses possible thanks to FIXED LOD expressions.
+ Cohort analysis is one of them. Let’s imagine that we introduced a new feature of a product to a group of clients. 
+We would like to follow up on how this group, in other words ‘cohort’, 
+uses the product over time and compare it to another cohort - for example clients with no access to the feature.
+ Another one is survival analysis.
+ We all have good intentions on Jan 1st, but do we still stick with our New Year's resolutions in February? Survival rate 
+
+EG: heart rate analaysis [ fit bit data]
+
+most common application of LOD exp is comparing performance Vs Benchmark
+eg: % of category 
+
+Distance Per category:{FIXED [Category]:SUM([Distance])}
+% per category: SUM([Distance])/SUM([Distance Per category])
+
+cohort analysis:
+Days from first steps:zn([Days with steps]-[First day with steps])
+Days with steps: IF [Steps]>0 AND [Activity Date]>[First day with steps] then [Activity Date] END
+First day with steps:IF  [Steps]>0 THEN {FIXED [User ID] : MIN([Activity Date])} END
+
+Survival Analysis:
+number_of _days_program:[Activity Date]-[first_day_program]
+first_day_program:{FIXED [User ID]:MIN([Activity Date])}
+
+1 in 2 females made it to 30 days mark!
+
+**********************************************************
+Profitable or not :
+
+(SUM[Profit] ) >= SUM({ Budgeted Profit } ) AND SUM ([Profit]) >= 0
+ 
+*put the above featured variable into colour
+
+
+KPI UP & Down (  red & green triangle )
+
+budget % diffrence : SUM([Profit]) - SUM([Budget] ) ) / ABS (SUM[BUDGET PROFIT) )
+
+* drag the above variable into LABEL 
+
+NOTE : check the default properties > number format FOR above variable [ budget diff ]
+              we can find out the format value which can be edited
+             can USE UNICODE FROM wikipedia for SYMBOLS 
+
+
+*****************************************************
+Side-by-side bar charts : two DIM , 1 Measure , one out two DIM in COLOUR CARD
+
+
+
+
